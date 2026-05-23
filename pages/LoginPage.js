@@ -6,6 +6,7 @@ constructor(page) {
     this.usernameInput = '#user-name';
     this.passwordInput = '#password';
     this.loginBtn = '#login-button';
+    this.errorMessage = '[data-test="error"]';
 }
 
 async navigate() {
@@ -19,5 +20,10 @@ async login(username, password) {
     await this.page.fill(this.passwordInput, password);
     await this.page.click(this.loginBtn);
 }
+
+async getErrorMessage() {
+        return await this.page.locator(this.errorMessage).textContent();
+    }
+
 }
 module.exports = LoginPage;

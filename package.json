@@ -1,18 +1,31 @@
 {
   "name": "playwright-cucumber-sauce",
   "version": "1.0.0",
-  "description": "",
+  "description": "Playwright, Cucumber, and Artillery automation framework",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "cucumber-js",
+    "test:chromium": "cross-env BROWSER=chromium cucumber-js",
+    "test:firefox": "cross-env BROWSER=firefox cucumber-js",
+    "test:webkit": "cross-env BROWSER=webkit cucumber-js",
+    "test:data-driven": "cucumber-js features/data_driven_login.feature",
+    "perf": "artillery run performance/load-config.yml",
+    "perf:report": "artillery run --output performance/report.json performance/load-config.yml && artillery report performance/report.json"
   },
-  "keywords": [],
+  "keywords": [
+    "playwright",
+    "cucumber",
+    "artillery",
+    "automation",
+    "sdet"
+  ],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
     "@cucumber/cucumber": "^12.9.0",
     "@playwright/test": "^1.60.0",
+    "artillery": "^2.0.32",
     "cross-env": "^10.1.0",
     "playwright": "^1.60.0",
     "winston": "^3.19.0"

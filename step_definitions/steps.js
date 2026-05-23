@@ -24,12 +24,37 @@ Given('I am on the SauceDemo login page', async function () {
     await this.loginPage.navigate();
 });
 
+// Original static login step
 When('I login with valid credentials', async function () {
     try {
         await this.loginPage.login(credentials.validUser.username, credentials.validUser.password);
     } catch (error) {
         logger.error(`Login failed: ${error.message}`);
         throw error; 
+    }
+});
+
+// NEW: Parameterized login step for Scenario Outlines
+When('I login with username {string} and password {string}', async function (username, password) {
+    try {
+        await this.loginPage.login(username, password);
+    } catch (error) {
+        logger.error(`Login failed for ${username}: ${error.message}`);
+        throw error; 
+    }
+});
+
+// NEW: Parameterized validation step for Scenario Outlines (handles success and locked out users)
+Then('the login should resolve with status {string}', async function (expectedStatus) {
+    if (expectedStatus === 'success') {
+        const isLoaded = await this.inventoryPage.isLoaded();
+        expect(isLoaded).toBeTruthy();
+    } else if (expectedStatus === 'locked') {
+        const errorMessage = await this.loginPage.getErrorMessage();
+        logger.info(`Captured error message: ${errorMessage}`);
+        expect(errorMessage).toContain('locked out');
+    } else {
+        throw new Error(`Unknown status provided in Examples table: ${expectedStatus}`);
     }
 });
 

@@ -1,0 +1,16 @@
+config:
+  target: "https://www.saucedemo.com"
+  engines:
+    playwright:
+      # Launches Chromium. Set to true if you want to see the browsers pop up during local debugging.
+      launchOptions:
+        headless: true 
+  processor: "./login_flow.js"
+  phases:
+    - duration: 10          # Run for 10 seconds
+      arrivalRate: 2        # Spin up 2 new virtual users every second
+      name: "Warm up phase"
+
+scenarios:
+  - engine: playwright
+    testFunction: "loadTestLogin"
