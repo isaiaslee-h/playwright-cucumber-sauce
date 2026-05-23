@@ -1,0 +1,41 @@
+name: Artillery Performance Tests
+
+on:
+  # Allows you to trigger the load test manually from the GitHub Actions UI
+  workflow_dispatch: 
+  # Runs automatically every day at 2:00 AM UTC
+  schedule:
+    - cron: '0 2 * * *'
+
+jobs:
+  load-test:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    - name: Install Dependencies
+      run: npm ci
+
+    - name: Install Playwright Browsers & OS Dependencies
+      # Artillery's Playwright engine requires the browsers to be installed
+      run: npx playwright install --with-deps
+
+    - name: Run Artillery Load Test & Generate Report
+      run: npm run perf:report
+
+    - name: Upload Performance Report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: artillery-html-report
+        # Uploads the entire performance folder (JSON and HTML reports)
+        path: performance/
+        retention-days: 14
