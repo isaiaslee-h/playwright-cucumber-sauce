@@ -3,3 +3,4 @@ reports/
 .env
 .DS_Store
 test-results/
+data/credentials.json

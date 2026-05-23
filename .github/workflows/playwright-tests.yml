@@ -32,6 +32,11 @@ jobs:
     - name: Install Playwright Browsers & OS Dependencies
       run: npx playwright install --with-deps
 
+    - name: Reconstruct Credentials File
+      run: |
+            mkdir -p data
+            echo '{ "validUser": { "username": "${{ secrets.SAUCE_USERNAME }}", "password": "${{ secrets.SAUCE_PASSWORD }}" } }' > data/credentials.json
+
     - name: Run Cucumber Tests
       # Injects the current matrix browser into the cross-env variable we set up in hooks.js
       run: npx cross-env BROWSER=${{ matrix.browser }} cucumber-js
