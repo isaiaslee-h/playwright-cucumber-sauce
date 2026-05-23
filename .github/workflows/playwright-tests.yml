@@ -5,12 +5,17 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-  workflow_dispatch: # Allows you to run the test manually from the GitHub UI
+  workflow_dispatch:
 
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    strategy:
+      # fail-fast: false ensures that if WebKit fails, Chromium and Firefox will still finish running
+      fail-fast: false 
+      matrix:
+        browser: [chromium, firefox, webkit]
 
     steps:
     - name: Checkout Code
@@ -22,20 +27,20 @@ jobs:
         node-version: 20
 
     - name: Install Dependencies
-      # npm ci is faster and more reliable for CI environments than npm install
       run: npm ci
 
     - name: Install Playwright Browsers & OS Dependencies
       run: npx playwright install --with-deps
 
     - name: Run Cucumber Tests
-      run: npx cucumber-js
+      # Injects the current matrix browser into the cross-env variable we set up in hooks.js
+      run: npx cross-env BROWSER=${{ matrix.browser }} cucumber-js
 
     - name: Upload Test Report
-      # The if: always() ensures the report uploads even if a test fails
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: cucumber-html-report
+        # Dynamically names the artifact so you get 3 separate reports
+        name: cucumber-html-report-${{ matrix.browser }} 
         path: reports/
         retention-days: 14
