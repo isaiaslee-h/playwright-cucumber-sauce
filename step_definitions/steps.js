@@ -41,7 +41,7 @@ Then('the login should resolve with status {string}', async function (expectedSt
     }
 });
 
-Given('I am logged in via API', async function () {
+Given('I simulate login via session cookie', async function () {
     logger.info('Simulating API login via cookie injection');
     
     // Initialize required page objects
