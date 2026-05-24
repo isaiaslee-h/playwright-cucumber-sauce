@@ -1,5 +1,5 @@
 config:
-  target: "https://www.saucedemo.com"
+  target: "{{ $processEnvironment.BASE_URL }}"
   engines:
     playwright:
       # Launches Chromium. Set to true if you want to see the browsers pop up during local debugging.
