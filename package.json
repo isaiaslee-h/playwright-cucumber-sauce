@@ -1,5 +1,5 @@
 {
-  "name": "playwright-cucumber-sauce",
+  "name": "playwright-cucumber-saucedemo",
   "version": "1.0.0",
   "description": "Playwright, Cucumber, and Artillery automation framework",
   "scripts": {
