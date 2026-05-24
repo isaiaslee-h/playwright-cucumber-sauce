@@ -15,9 +15,12 @@ class CartPage {
         this.continueBtn = '#continue-shopping';
     }
 
+    /**
+     * Asserts that all core cart elements are visible and interactable.
+     * @returns {Promise<void>}
+     */
     async verifyCartElementsEnabled() {
         logger.info('Verifying cart elements are visible and enabled');
-        // Web-first assertions automatically wait and retry!
         await expect(this.page.locator(this.cartQty)).toBeVisible();
         await expect(this.page.locator(this.itemDesc)).toBeVisible();
         await expect(this.page.locator(this.removeBtn)).toBeEnabled();
@@ -25,11 +28,19 @@ class CartPage {
         await expect(this.page.locator(this.continueBtn)).toBeEnabled();
     }
 
+    /**
+     * Removes the product from the cart.
+     * @returns {Promise<void>}
+     */
     async removeProduct() {
         logger.info('Removing product from cart');
         await this.page.click(this.removeBtn);
     }
 
+    /**
+     * Counts the total number of distinct item rows in the cart.
+     * @returns {Promise<number>}
+     */
     async getCartItemCount() {
         return await this.page.locator(this.cartItem).count();
     }
