@@ -6,12 +6,7 @@ const LoginPage = require('../pages/LoginPage');
 const InventoryPage = require('../pages/InventoryPage');
 const CartPage = require('../pages/CartPage');
 
-// API & Services
-const APIClient = require('../utils/apiClient');
-const AuthService = require('../services/AuthService');
-
-// Data & Utils
-const credentials = require('../data/credentials.json');
+// Utils
 const logger = require('../utils/logger');
 
 // ==========================================
@@ -24,17 +19,6 @@ Given('I am on the SauceDemo login page', async function () {
     await this.loginPage.navigate();
 });
 
-// Original static login step
-When('I login with valid credentials', async function () {
-    try {
-        await this.loginPage.login(credentials.validUser.username, credentials.validUser.password);
-    } catch (error) {
-        logger.error(`Login failed: ${error.message}`);
-        throw error; 
-    }
-});
-
-// NEW: Parameterized login step for Scenario Outlines
 When('I login with username {string} and password {string}', async function (username, password) {
     try {
         await this.loginPage.login(username, password);
@@ -44,7 +28,6 @@ When('I login with username {string} and password {string}', async function (use
     }
 });
 
-// NEW: Parameterized validation step for Scenario Outlines (handles success and locked out users)
 Then('the login should resolve with status {string}', async function (expectedStatus) {
     if (expectedStatus === 'success') {
         const isLoaded = await this.inventoryPage.isLoaded();
@@ -58,45 +41,29 @@ Then('the login should resolve with status {string}', async function (expectedSt
     }
 });
 
-// ==========================================
-// API-BASED LOGIN SETUP (STATE INJECTION)
-// ==========================================
 Given('I am logged in via API', async function () {
-    // Initialize page objects needed for post-login steps
+    logger.info('Simulating API login via cookie injection');
+    
+    // Initialize required page objects
     this.inventoryPage = new InventoryPage(this.page);
     this.cartPage = new CartPage(this.page);
-
-    const apiClient = new APIClient();
-    await apiClient.init();
-    const authService = new AuthService(apiClient);
-
-    try {
-        // Inject the SauceDemo authentication cookie directly into the BrowserContext
-        const authCookie = authService.getSauceDemoSessionCookie(credentials.validUser.username);
-        await this.context.addCookies([authCookie]);
-        logger.info('Session cookie injected into BrowserContext');
-
-        // Navigate directly to the secured inventory page
-        await this.page.goto('https://www.saucedemo.com/inventory.html');
-    } catch (error) {
-        logger.error(`API State injection failed: ${error.message}`);
-        throw error;
-    } finally {
-        await apiClient.dispose();
-    }
+    
+    // Bypass UI by injecting the session cookie directly into the browser context
+    await this.page.context().addCookies([{
+        name: 'session-username',
+        value: 'standard_user', // Using a valid user
+        domain: 'www.saucedemo.com',
+        path: '/'
+    }]);
+    
+    // Navigate directly to the authenticated page
+    await this.page.goto(`${process.env.BASE_URL}/inventory.html`);
 });
 
-// ==========================================
-// SHARED ACTION & ASSERTION STEPS
-// ==========================================
+
 Then('I should see the products page', async function () {
     const isLoaded = await this.inventoryPage.isLoaded();
     expect(isLoaded).toBeTruthy();
-});
-
-Then('I extract all products and prices', async function () {
-    const products = await this.inventoryPage.getAllProducts();
-    logger.info(`Found ${products.length} products. First item: ${JSON.stringify(products[0])}`);
 });
 
 When('I add a product to the cart', async function () {
@@ -105,7 +72,8 @@ When('I add a product to the cart', async function () {
 
 Then('the cart badge should update', async function () {
     const qty = await this.inventoryPage.getCartQuantity();
-    expect(qty).toBe("1");
+    // Updated to expect a Number based on our Phase 2 refactor
+    expect(qty).toBe(1); 
 });
 
 When('I go to the cart page', async function () {
@@ -113,8 +81,8 @@ When('I go to the cart page', async function () {
 });
 
 Then('I verify the cart item details and buttons are enabled', async function () {
-    const areElementsReady = await this.cartPage.verifyCartElementsEnabled();
-    expect(areElementsReady).toBeTruthy();
+    // Assertions are now handled natively inside the Page Object
+    await this.cartPage.verifyCartElementsEnabled();
 });
 
 When('I remove the product', async function () {
@@ -125,5 +93,6 @@ Then('the cart should be empty', async function () {
     const itemCount = await this.cartPage.getCartItemCount();
     expect(itemCount).toBe(0);
     const qty = await this.inventoryPage.getCartQuantity();
-    expect(qty).toBe("0");
+    // Updated to expect a Number
+    expect(qty).toBe(0); 
 });

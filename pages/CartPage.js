@@ -1,6 +1,10 @@
+const { expect } = require('@playwright/test');
 const logger = require('../utils/logger');
 
 class CartPage {
+    /**
+     * @param {import('@playwright/test').Page} page
+     */
     constructor(page) {
         this.page = page;
         this.cartItem = '.cart_item';
@@ -12,14 +16,13 @@ class CartPage {
     }
 
     async verifyCartElementsEnabled() {
-        logger.info('Verifying cart elements are enabled');
-        const isQtyVisible = await this.page.locator(this.cartQty).isVisible();
-        const isDescVisible = await this.page.locator(this.itemDesc).isVisible();
-        const isRemoveEnabled = await this.page.locator(this.removeBtn).isEnabled();
-        const isCheckoutEnabled = await this.page.locator(this.checkoutBtn).isEnabled();
-        const isContinueEnabled = await this.page.locator(this.continueBtn).isEnabled();
-
-        return isQtyVisible && isDescVisible && isRemoveEnabled && isCheckoutEnabled && isContinueEnabled;
+        logger.info('Verifying cart elements are visible and enabled');
+        // Web-first assertions automatically wait and retry!
+        await expect(this.page.locator(this.cartQty)).toBeVisible();
+        await expect(this.page.locator(this.itemDesc)).toBeVisible();
+        await expect(this.page.locator(this.removeBtn)).toBeEnabled();
+        await expect(this.page.locator(this.checkoutBtn)).toBeEnabled();
+        await expect(this.page.locator(this.continueBtn)).toBeEnabled();
     }
 
     async removeProduct() {

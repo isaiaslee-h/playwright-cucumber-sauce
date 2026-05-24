@@ -3,6 +3,8 @@ module.exports = {
         parallel: 3,
         format: ['html:reports/cucumber-report.html', 'summary'],
         paths: ['features/**/*.feature'],
-        require: ['step_definitions/**/*.js']
+        requireModule: ['dotenv/config'],
+        require: ['step_definitions/**/*.js'],
+        timeout: 30000 // Global timeout implementation
     }
 };

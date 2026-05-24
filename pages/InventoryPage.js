@@ -1,6 +1,9 @@
 const logger = require('../utils/logger');
 
 class InventoryPage {
+    /**
+     * @param {import('@playwright/test').Page} page
+     */
     constructor(page) {
         this.page = page;
         this.title = '.title';
@@ -31,10 +34,12 @@ class InventoryPage {
     }
 
     async getCartQuantity() {
-        if (await this.page.locator(this.cartBadge).isVisible()) {
-            return await this.page.locator(this.cartBadge).textContent();
+        const badge = this.page.locator(this.cartBadge);
+        if (await badge.isVisible()) {
+            const text = await badge.textContent();
+            return parseInt(text, 10);
         }
-        return "0";
+        return 0;
     }
 
     async goToCart() {

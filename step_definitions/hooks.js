@@ -2,11 +2,17 @@ const { Before, After, Status, setWorldConstructor, World, setDefaultTimeout } =
 const { chromium, firefox, webkit } = require('playwright');
 const logger = require('../utils/logger');
 
-setDefaultTimeout(30 * 1000);
+setDefaultTimeout(10000);
 
 class CustomWorld extends World {
     constructor(options) {
         super(options);
+        /** @type {import('playwright').Browser} */
+        this.browser = null;
+        /** @type {import('playwright').BrowserContext} */
+        this.context = null;
+        /** @type {import('playwright').Page} */
+        this.page = null;
     }
 }
 setWorldConstructor(CustomWorld);
@@ -27,7 +33,7 @@ Before(async function () {
 });
 
 After(async function (scenario) {
-    if (scenario.result.status === Status.FAILED) {
+    if (scenario.result.status === Status.FAILED && this.page) {
         logger.error(`Scenario Failed: ${scenario.pickle.name}. Taking screenshot.`);
         const screenshot = await this.page.screenshot({ 
             path: `reports/screenshots/${scenario.pickle.name.replace(/\s+/g, '_')}.png`, 
@@ -35,7 +41,8 @@ After(async function (scenario) {
         });
         this.attach(screenshot, 'image/png'); // Attaches to HTML report
     }
-    await this.page.close();
-    await this.context.close();
-    await this.browser.close();
+    // Safely close instances
+    if (this.page) await this.page.close();
+    if (this.context) await this.context.close();
+    if (this.browser) await this.browser.close();
 });

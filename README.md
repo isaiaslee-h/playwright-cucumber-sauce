@@ -1,23 +1,25 @@
-# Playwright Cucumber Framework
+# Playwright Cucumber POM Framework
 
-## Setup
-1. Clone the repository
-2. Run `npm install`
-3. Run `npx playwright install`
+## Setup & Local Execution
+1. Clone the repository.
+2. Run `npm install` to install dependencies.
+3. Run `npx playwright install --with-deps` to install required browsers.
+4. **Data Setup:** Copy `data/credentials.example.json` to `data/credentials.json` and enter valid SauceDemo credentials.
+5. **Environment:** Create a `.env` file at the root and add `BASE_URL=https://www.saucedemo.com`.
 
-## Execution Instructions
-By default, tests run in parallel (3 workers) across Chromium, generating an HTML report in `/reports`.
+## Commands
+* `npm test` - Runs tests in Chromium (3 parallel workers).
+* `npm run test:firefox` - Runs tests in Firefox.
+* `npm run test:data-driven` - Runs scenario outlines.
+* `npm run perf` - Runs the Artillery load test.
 
-**Run in Chromium (Default):**
-`npx cucumber-js`
+## GitHub Actions CI/CD
+This project uses GitHub Secrets for secure execution. Ensure the following secrets are added to your repository before triggering the pipeline:
+* `SAUCE_USERNAME`
+* `SAUCE_PASSWORD`
 
-**Run in Firefox:**
-`npx cross-env BROWSER=firefox cucumber-js`
+HTML Reports for functional tests and Artillery load tests are automatically uploaded as zip artifacts to the GitHub Actions run summary page.
 
-**Run in WebKit:**
-`npx cross-env BROWSER=webkit cucumber-js`
-
-## Error Handling & Reporting
-- **Logs:** Handled via `winston`, visible in the console.
-- **Screenshots:** Automatically captured on test failure and saved to `/reports/screenshots/`.
-- **HTML Report:** Generated at `reports/cucumber-report.html`.
+## Notes on Architecture
+* **API Login:** The API login step is a *cookie simulation* injected directly into the Playwright BrowserContext to bypass the UI. It is not a true REST authentication since SauceDemo lacks a backend auth API.
+* **Parallel Workers:** Configured globally in `cucumber.js`.
