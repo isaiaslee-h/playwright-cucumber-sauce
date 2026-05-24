@@ -21,10 +21,11 @@ jobs:
       with:
         node-version: 20
 
-    - name: Reconstruct Credentials File
+    - name: Reconstruct Credentials and Environment Files
       run: |
         mkdir -p data
         echo '{ "validUser": { "username": "${{ secrets.SAUCE_USERNAME }}", "password": "${{ secrets.SAUCE_PASSWORD }}" } }' > data/credentials.json
+        echo "BASE_URL=https://www.saucedemo.com" > .env
 
     - name: Install Dependencies
       run: npm ci
