@@ -9,8 +9,8 @@
     "test:firefox": "cross-env BROWSER=firefox cucumber-js",
     "test:webkit": "cross-env BROWSER=webkit cucumber-js",
     "test:data-driven": "cucumber-js features/data_driven_login.feature",
-    "perf": "artillery run performance/load-config.yml",
-    "perf:report": "artillery run --output performance/report.json performance/load-config.yml && artillery report performance/report.json"
+    "perf": "artillery run --dotenv .env performance/load-config.yml",
+    "perf:report": "artillery run --dotenv .env --output performance/report.json performance/load-config.yml && artillery report performance/report.json"
   },
   "keywords": [
     "playwright",
