@@ -2,8 +2,8 @@
   "name": "playwright-cucumber-sauce",
   "version": "1.0.0",
   "description": "Playwright, Cucumber, and Artillery automation framework",
-  "main": "index.js",
   "scripts": {
+    "lint": "eslint . --ext .js",
     "test": "cucumber-js",
     "test:chromium": "cross-env BROWSER=chromium cucumber-js",
     "test:firefox": "cross-env BROWSER=firefox cucumber-js",
