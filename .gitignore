@@ -2,7 +2,5 @@ node_modules/
 reports/
 test-results/
 .DS_Store
-.env
-data/credentials.json
 performance/report.json
 performance/*.html

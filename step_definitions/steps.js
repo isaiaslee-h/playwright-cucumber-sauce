@@ -8,6 +8,7 @@ const CartPage = require('../pages/CartPage');
 
 // Utils
 const logger = require('../utils/logger');
+const credentials = require('../data/credentials.json');
 
 // ==========================================
 // UI-BASED LOGIN SETUP
@@ -42,21 +43,22 @@ Then('the login should resolve with status {string}', async function (expectedSt
 });
 
 Given('I simulate login via session cookie', async function () {
-    logger.info('Simulating API login via cookie injection');
+    logger.info('Simulating login via cookie injection');
     
-    // Initialize required page objects
     this.inventoryPage = new InventoryPage(this.page);
     this.cartPage = new CartPage(this.page);
     
-    // Bypass UI by injecting the session cookie directly into the browser context
+    // Dynamically parse the domain from the environment variable
+    const baseUrl = new URL(process.env.BASE_URL);
+    const targetDomain = baseUrl.hostname;
+    
     await this.page.context().addCookies([{
         name: 'session-username',
-        value: 'standard_user', // Using a valid user
-        domain: 'www.saucedemo.com',
+        value: credentials.validUser.username, // Read dynamically
+        domain: targetDomain,                  // Read dynamically
         path: '/'
     }]);
     
-    // Navigate directly to the authenticated page
     await this.page.goto(`${process.env.BASE_URL}/inventory.html`);
 });
 

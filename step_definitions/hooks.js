@@ -1,6 +1,8 @@
 const { Before, After, Status, setWorldConstructor, World, setDefaultTimeout } = require('@cucumber/cucumber');
 const { chromium, firefox, webkit } = require('playwright');
 const logger = require('../utils/logger');
+const fs = require('fs');
+const path = require('path');
 
 setDefaultTimeout(10000);
 
@@ -35,11 +37,17 @@ Before(async function () {
 After(async function (scenario) {
     if (scenario.result.status === Status.FAILED && this.page) {
         logger.error(`Scenario Failed: ${scenario.pickle.name}. Taking screenshot.`);
+        
+        const screenshotPath = `reports/screenshots/${scenario.pickle.name.replace(/\s+/g, '_')}.png`;
+        
+        // FIX: Ensure the directory exists before taking the screenshot
+        fs.mkdirSync(path.dirname(screenshotPath), { recursive: true });
+        
         const screenshot = await this.page.screenshot({ 
-            path: `reports/screenshots/${scenario.pickle.name.replace(/\s+/g, '_')}.png`, 
+            path: screenshotPath, 
             fullPage: true 
         });
-        this.attach(screenshot, 'image/png'); // Attaches to HTML report
+        this.attach(screenshot, 'image/png');
     }
     // Safely close instances
     if (this.page) await this.page.close();
