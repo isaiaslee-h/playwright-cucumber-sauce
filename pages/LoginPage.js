@@ -18,7 +18,7 @@ class LoginPage {
      */
     async navigate() {
         if (!process.env.BASE_URL) {
-            throw new Error("CRITICAL: BASE_URL environment variable is not defined. Please check your .env file.");
+            throw new Error('CRITICAL: BASE_URL environment variable is not defined. Please check your .env file.');
         }
         logger.info(`Navigating to ${process.env.BASE_URL}`);
         await this.page.goto(process.env.BASE_URL);
