@@ -20,7 +20,8 @@ Given('I am on the SauceDemo login page', async function () {
     await this.loginPage.navigate();
 });
 
-When('I login with username {string} and password {string}', async function (username, password) {
+When('I login with username {string} account', async function (username) {
+    const password = credentials.validUser.password;
     try {
         await this.loginPage.login(username, password);
     } catch (error) {

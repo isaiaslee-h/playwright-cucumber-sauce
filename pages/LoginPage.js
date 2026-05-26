@@ -31,7 +31,7 @@ class LoginPage {
      * @returns {Promise<void>}
      */
     async login(username, password) {
-        logger.info(`Attempting login with user: ${username}`);
+        logger.info(`Attempting login with user: ${username} (password masked)`);
         await this.page.fill(this.usernameInput, username);
         await this.page.fill(this.passwordInput, password);
         await this.page.click(this.loginBtn);
